@@ -1,0 +1,52 @@
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 500px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        p {
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: #fff;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: default;
+        }
+        button:hover {
+            background-color: #3e8e41;
+        }
+        button:focus {
+            outline: none;
+        }
+        #startRecording:disabled {
+            background-color: #ccc;
+            cursor: default;
+        }
+        #stopRecording:disabled {
+            background-color: #ccc;
+            cursor: default;
+        }

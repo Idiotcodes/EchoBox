@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Echobox</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="center">
+        <h2>ഞങ്ങളുടെ സേവനത്തിൽ നിങ്ങൾ തൃപ്തനാണോ?</h2>
+        <div class="inside">
+            <a href="{{ url_for('thankyou') }}">
+                <button>അതെ</button>
+            </a>
+            <a href="{{ url_for('feedback') }}">
+                <button>അല്ല</button>
+            </a>
+        </div>
+    </div>       
+</body>
+</html>

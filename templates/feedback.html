@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Echobox</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+
+<body>
+  <form action="{{ url_for('submit') }}" method="post">
+    <label for="username">പേര്:</label>
+    <input type="text" name="username" id="username" required>
+    <br>
+    <label for="mobile_number">ഫോൺ നമ്പർ:</label>
+    <input type="text" name="mobile_number" id="mobile_number" max="10" required>
+    <br>
+    <p>
+      <button id="startRecording">റെക്കോർഡിംഗ് ആരംഭിക്കുക</button>
+      <button id="stopRecording" disabled>റെക്കോർഡിംഗ് നിർത്തുക</button>
+    </p>
+  </form>
+  <button type="submit">സമർപ്പിക്കുക</button>
+  <a href="{{ url_for('response') }}"><button>തിരിച്ചു പോകുക</button></a>
+
+  <script>
+    const startRecordingBtn = document.getElementById('startRecording');
+    const stopRecordingBtn = document.getElementById('stopRecording');
+
+    let rec;
+    let audioChunks = [];
+
+    navigator.mediaDevices.getUserMedia({
+        audio: true
+      })
+      .then((stream) => {
+        rec = new MediaRecorder(stream);
+
+        rec.ondataavailable = (e) => {
+          audioChunks.push(e.data);
+          if (rec.state === 'inactive') {
+            const blob = new Blob(audioChunks, {
+              type: 'audio/mpeg-3'
+            });
+            sendData(blob);
+          }
+        };
+      });
+
+    function sendData(data) {
+      const form = new FormData();
+      form.append('file', data, 'data.mp3');
+      form.append('title', 'data.mp3');
+
+      $.ajax({
+        type: 'POST',
+        url: '/save-record',
+        data: form,
+        cache: false,
+        processData: false,
+        contentType: false
+      }).done((data) => {
+        console.log(data);
+      });
+    }
+
+    startRecordingBtn.onclick = (e) => {
+      console.log('Recording started..');
+      startRecordingBtn.disabled = true;
+      stopRecordingBtn.disabled = false;
+      audioChunks = [];
+      rec.start();
+    };
+
+    stopRecordingBtn.onclick = (e) => {
+      console.log('Recording stopped.');
+      startRecordingBtn.disabled = false;
+      stopRecordingBtn.disabled = true;
+      rec.stop();
+    };
+  </script>
+</body>
+
+</html>
