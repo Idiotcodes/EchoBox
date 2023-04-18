@@ -2,8 +2,15 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Echobox</title>
+    <title>EchoBox</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicon-16x16.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='images/android-chrome-512x512.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='images/android-chrome-192x192.png') }}">
+    <link rel="manifest" href="/site.webmanifest">  
     <audio src="{{ url_for('static', filename='audios/thankyou.mp3') }}" autoplay></audio>
 </head>
 <body>

@@ -2,13 +2,22 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Echobox</title>
+    <title>EchoBox</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicon-16x16.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='images/android-chrome-512x512.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='images/android-chrome-192x192.png') }}">
+    <link rel="manifest" href="/site.webmanifest">  
     <audio src="{{ url_for('static', filename='audios/main.mp3') }}" autoplay></audio>
 </head>
 <body>
     <div class="center">
-        <h2>നിങ്ങളുടെ പ്രതികരണം രേഖപെടുത്താൻ സമർപ്പിക്കുക ബട്ടൺ ക്ലിക്ക് ചെയ്യുക</h2>
+        <img src="{{ url_for('static', filename='images/logo.png') }}" width="300" height="300" alt="Image">
+        <h2>EchoBox</h2>
+        <h4>നിങ്ങളുടെ പ്രതികരണം രേഖപെടുത്താൻ ബട്ടൺ ക്ലിക്ക് ചെയ്യുക</h4>
         <button class="primary-btn"><a href="{{ url_for('response') }}">സമർപ്പിക്കുക</a></button>
     </div>
 </body>
