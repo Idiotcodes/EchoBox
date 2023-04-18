@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>Echobox</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <audio src="{{ url_for('static', filename='audios/thankyou.mp3') }}" autoplay></audio>
 </head>
 <body>
     <div class="center">
-        <h1>നന്ദി</h1>
+        <h2>നന്ദി</h2>
         <h4>നിങ്ങളുടെ പ്രതികരണം രേഖപ്പെടുത്തിയിരിക്കുന്നു, നന്ദി</h4>
-        <a href="{{ url_for('home') }}"><button>തിരിച്ചു പോകുക</button></a>
+        <button class="primary-btn"><a href="{{ url_for('home') }}">തിരിച്ചു പോകുക</a></button>
     </div>
 </body>
 </html>

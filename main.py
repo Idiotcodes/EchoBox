@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, flash, url_for
+from flask import Flask, render_template, request, redirect, flash
 import cv2
 import uuid
 import os
@@ -6,22 +6,25 @@ import mysql.connector
 from datetime import datetime
 import re
 
-IMG_UPLOAD_FOLDER = "static/images"
-AUDIO_UPLOAD_FOLDER = "staic/audios"
-ALLOWED_AUDIO_EXTENSIONS = {'mp3', 'wav'}
+IMG_UPLOAD_FOLDER_NEGATIVE = "data/images/positive"
+IMG_UPLOAD_FOLDER_POSITIVE = "data/images/negative"
+AUDIO_UPLOAD_FOLDER = "data/audios"
+
 
 app = Flask(__name__)
-app.config["IMG_UPLOAD_FOLDER"] = IMG_UPLOAD_FOLDER
+app.config["IMG_UPLOAD_FOLDER_POSITIVE"] = IMG_UPLOAD_FOLDER_POSITIVE
+app.config["IMG_UPLOAD_FOLDER_NEGATIVE"] = IMG_UPLOAD_FOLDER_NEGATIVE
 app.config["AUDIO_UPLOAD_FOLDER"] = AUDIO_UPLOAD_FOLDER
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 
-# MySQL configuration
+
 mysql_config = {
-    'user': os.environ.get('MYSQL_USER'),
-    'password': os.environ.get('MYSQL_PASSWORD'),
-    'host': os.environ.get('MYSQL_HOST'),
-    'database': os.environ.get('MYSQL_DATABASE')
+    "user": "root",
+    "password": "sK)#kV;NHSbX#7C0pU{p",
+    "host": "localhost",
+    "database": "project",
 }
+
 
 def sanitize_sql_string(value):
     """Helper function to sanitize SQL strings"""
@@ -48,21 +51,52 @@ def feedback():
     return render_template("feedback.html")
 
 
+@app.route("/rate")
+def rate():
+    return render_template("rate.html")
+
+
+@app.route("/save-record", methods=["POST"])
+def save_record():
+    if "file" not in request.files:
+        flash("No file part")
+        return redirect(request.url)
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        flash("No selected file")
+        return redirect(request.url)
+
+    current_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    file_name = f"{current_time}_{str(uuid.uuid4())}.mp3"
+    full_file_name = os.path.join(app.config["AUDIO_UPLOAD_FOLDER"], file_name)
+    file.save(full_file_name)
+
+    full_file_name = sanitize_sql_string(full_file_name)
+
+    return full_file_name
+
+
 @app.route("/submit", methods=["POST"])
 def submit():
-    # get the user's name and mobile number
     username = request.form["username"]
     mobile_number = request.form["mobile_number"]
     timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-
-    # validate username with valid characters
     if not re.match("^[a-zA-Z0-9_ ]*$", username):
-        return render_template("error.html", message="ഉപയോക്തൃനാമത്തിൽ അസാധുവായ പ്രതീകങ്ങൾ!  അക്ഷരങ്ങൾ, അക്കങ്ങൾ, സ്‌പെയ്‌സുകൾ, അടിവരകൾ എന്നിവ മാത്രം ഉപയോഗിക്കുക.")
+        return render_template(
+            "error.html",
+            message="ഉപയോക്തൃനാമത്തിൽ അസാധുവായ പ്രതീകങ്ങൾ!  അക്ഷരങ്ങൾ, അക്കങ്ങൾ, സ്‌പെയ്‌സുകൾ, അടിവരകൾ എന്നിവ മാത്രം ഉപയോഗിക്കുക.",
+            error="/static/audios/error1.mp3",
+        )
 
     if len(mobile_number) != 10:
-        return render_template("error.html", message="ശരിയായ ഫോൺ നമ്പർ അല്ല! ശരിയായ നമ്പർ ഉപയോഗിക്കുക.")
+        return render_template(
+            "error.html", 
+            message="ശരിയായ ഫോൺ നമ്പർ അല്ല! ശരിയായ നമ്പർ ഉപയോഗിക്കുക.",
+            error="/static/audios/error2.mp3",
+        )
 
-    # check if the mobile number already exists
     cnx = mysql.connector.connect(**mysql_config)
     cursor = cnx.cursor()
     query = "SELECT * FROM user_data WHERE mobile_number=%s"
@@ -72,79 +106,112 @@ def submit():
     if result is not None:
         cursor.close()
         cnx.close()
-        return render_template("error.html", message="ഫോൺ നമ്പർ ഇതിനകം നിലവിലുണ്ട്! മറ്റൊരു നമ്പർ ഉപയോഗിക്കുക.")
+        return render_template(
+            "error.html",
+            message="ഫോൺ നമ്പർ ഇതിനകം നിലവിലുണ്ട്! മറ്റൊരു നമ്പർ ഉപയോഗിക്കുക.",
+            error="/static/audios/error3.mp3",
+        )
 
-    # initialize the camera
     cap = cv2.VideoCapture(0)
 
-    # read the image from the camera
     ret, frame = cap.read()
 
-    # release the camera
     cap.release()
 
-    # generate a unique filename with timestamp for the photo
     current_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     filename = f"{current_time}_{str(uuid.uuid4())}.jpg"
-    img_file_name = os.path.join(
-        app.config["IMG_UPLOAD_FOLDER"], os.path.basename(filename))
-    img_file_name = os.path.abspath(img_file_name)
-#        if not img_file_name.startswith(app.config["IMG_UPLOAD_FOLDER"]):
-#            raise ValueError("Invalid file name")
+    img_file_name = os.path.join(app.config["IMG_UPLOAD_FOLDER_POSITIVE"], filename)
 
-    # save the image to disk
     cv2.imwrite(img_file_name, frame)
 
-    # fetch the audio file name from save_record function
-    full_file_name = save_record()
+    img_file_name = sanitize_sql_string(img_file_name)
 
-    # save the user's name, mobile number, image and audio to the database
-    insert_query = "INSERT INTO user_data (Username, Number, Image, Timestamp) VALUES (%s, %s, %s, %s)"
-    cursor.execute(insert_query, (sanitize_sql_string(username), sanitize_sql_string(
-        mobile_number), sanitize_sql_string(img_file_name), timestamp))
+    full_file_name = save_record() if "file" in request.files else ""
+    insert_query = "INSERT INTO user_data (username, mobile_number, image, audio, timestamp) VALUES (%s, %s, %s, %s, %s)"
+    cursor.execute(
+        insert_query,
+        (
+            sanitize_sql_string(username),
+            sanitize_sql_string(mobile_number),
+            img_file_name,
+            full_file_name,
+            timestamp,
+        ),
+    )
 
     cnx.commit()
     cursor.close()
     cnx.close()
 
-    # return a success message to the user
     return render_template("thankyou.html")
 
 
-def save_record():
-    # check if the post request has the file part
-    if "file" not in request.files:
-        flash("No file part")
-        return redirect(request.url)
+@app.route("/submit-feedback", methods=["POST"])
+def submit_feedback():
+    username = request.form["username"]
+    mobile_number = request.form["mobile_number"]
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    if not re.match("^[a-zA-Z0-9_ ]*$", username):
+        return render_template(
+            "error.html",
+            message="ഉപയോക്തൃനാമത്തിൽ അസാധുവായ പ്രതീകങ്ങൾ!  അക്ഷരങ്ങൾ, അക്കങ്ങൾ, സ്‌പെയ്‌സുകൾ, അടിവരകൾ എന്നിവ മാത്രം ഉപയോഗിക്കുക.",
+            error="/static/audios/error1.mp3",
+        )
 
-    file = request.files["file"]
+    if len(mobile_number) != 10:
+        return render_template(
+            "error.html",
+            message="ശരിയായ ഫോൺ നമ്പർ അല്ല! ശരിയായ നമ്പർ ഉപയോഗിക്കുക.",
+            error="/static/audios/error2.mp3",
+        )
 
-    # if user does not select file, browser also submits an empty part without filename
-    if file.filename == "":
-        flash("No selected file")
-        return redirect(request.url)
+    cnx = mysql.connector.connect(**mysql_config)
+    cursor = cnx.cursor()
+    query = "SELECT * FROM user_data_positive WHERE mobile_number=%s"
+    cursor.execute(query, (sanitize_sql_string(mobile_number),))
 
-    # check if the file is an audio file
-    if file.filename.split('.')[-1] not in ALLOWED_AUDIO_EXTENSIONS:
-        flash("Only audio files are allowed")
-        return redirect(request.url)
+    result = cursor.fetchone()
+    if result is not None:
+        cursor.close()
+        cnx.close()
+        return render_template(
+            "error.html",
+            message="ഫോൺ നമ്പർ ഇതിനകം നിലവിലുണ്ട്! മറ്റൊരു നമ്പർ ഉപയോഗിക്കുക.",
+            error="/static/audios/error3.mp3",
+        )
 
-    # generate a unique filename with timestamp for the audio file
+    rating = int(request.form["rating"])
+    cnx = mysql.connector.connect(**mysql_config)
+    cursor = cnx.cursor()
+
+    cap = cv2.VideoCapture(0)
+
+    ret, frame = cap.read()
+
+    cap.release()
+
     current_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    file_ext = file.filename.split('.')[-1]
-    file_name = f"{current_time}_{str(uuid.uuid4())}.{file_ext}"
-    full_file_name = os.path.join(
-        app.config["AUDIO_UPLOAD_FOLDER"], os.path.basename(file_name))
-    full_file_name = os.path.abspath(full_file_name)
-#    if not full_file_name.startswith(app.config["AUDIO_UPLOAD_FOLDER"]):
-#        raise ValueError("Invalid file name")
+    filename = f"{current_time}_{str(uuid.uuid4())}.jpg"
+    img_file_name = os.path.join(app.config["IMG_UPLOAD_FOLDER_NEGATIVE"], filename)
 
-    file.save(full_file_name)
+    cv2.imwrite(img_file_name, frame)
 
-    # sanitize the file name before inserting it into the database
-    full_file_name = sanitize_sql_string(full_file_name)
+    insert_query = "INSERT INTO user_data_positive (username, mobile_number, rating, image, timestamp) VALUES (%s, %s, %s ,%s, %s)"
+    cursor.execute(
+        insert_query,
+        (
+            sanitize_sql_string(username),
+            sanitize_sql_string(mobile_number),
+            rating,
+            img_file_name,
+            timestamp,
+        ),
+    )
+    cnx.commit()
+    cursor.close()
+    cnx.close()
 
-    return full_file_name
+    return render_template("thankyou.html")
 
 
 if __name__ == "__main__":

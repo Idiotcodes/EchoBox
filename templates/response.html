@@ -1,21 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>Echobox</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <audio src="{{ url_for('static', filename='audios/response.mp3') }}" autoplay></audio>
 </head>
 <body>
     <div class="center">
         <h2>ഞങ്ങളുടെ സേവനത്തിൽ നിങ്ങൾ തൃപ്തനാണോ?</h2>
         <div class="inside">
-            <a href="{{ url_for('thankyou') }}">
-                <button>അതെ</button>
-            </a>
-            <a href="{{ url_for('feedback') }}">
-                <button>അല്ല</button>
-            </a>
+                <button class="primary-btn"><a href="{{ url_for('rate') }}">അതെ</a></button>
+                <button class="secondary-btn"><a href="{{ url_for('feedback') }}">അല്ല</a></button>
         </div>
     </div>       
 </body>
-</html>
+</html> 

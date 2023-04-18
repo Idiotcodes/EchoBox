@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
   <meta charset="UTF-8">
   <title>Echobox</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+  <audio src="{{ url_for('static', filename='audios/feedback.mp3') }}" autoplay></audio>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 
 <body>
-  <form action="{{ url_for('submit') }}" method="post">
+  <form action="{{ url_for('submit') }}" method="post" data-theme="dark">
     <label for="username">പേര്:</label>
     <input type="text" name="username" id="username" required>
     <br>
@@ -20,9 +21,8 @@
       <button id="startRecording">റെക്കോർഡിംഗ് ആരംഭിക്കുക</button>
       <button id="stopRecording" disabled>റെക്കോർഡിംഗ് നിർത്തുക</button>
     </p>
-  </form>
-  <button type="submit">സമർപ്പിക്കുക</button>
-  <a href="{{ url_for('response') }}"><button>തിരിച്ചു പോകുക</button></a>
+  <a><button type="submit">സമർപ്പിക്കുക</button></a>
+</form>
 
   <script>
     const startRecordingBtn = document.getElementById('startRecording');

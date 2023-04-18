@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Feedback Form</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+	<audio src="{{ url_for('static', filename='audios/rate.mp3') }}" autoplay></audio>
+</head>
+<body>
+	<form action="/submit-feedback" method="POST" data-theme="dark">
+		<label for="username">പേര്:</label>
+		<input type="text" name="username" id="username" required>
+		<br>
+		<label for="mobile_number">ഫോൺ നമ്പർ:</label>
+		<input type="text" name="mobile_number" id="mobile_number" max="10" required>
+		<br>
+		<h4>ഞങ്ങളുടെ സേവനം റേറ്റുചെയ്യുക</h4>
+		<div class="rating">
+			<input type="radio" id="star5" name="rating" value="5" />
+			<label for="star5" title="5 stars">&#9733;</label>
+			<input type="radio" id="star4" name="rating" value="4" />
+			<label for="star4" title="4 stars">&#9733;</label>
+			<input type="radio" id="star3" name="rating" value="3" />
+			<label for="star3" title="3 stars">&#9733;</label>
+			<input type="radio" id="star2" name="rating" value="2" />
+			<label for="star2" title="2 stars">&#9733;</label>
+			<input type="radio" id="star1" name="rating" value="1" />
+			<label for="star1" title="1 star">&#9733;</label>
+		</div>
+		<button type="submit" class="primary-btn">ഫീഡ്‌ബാക്ക് സമർപ്പിക്കുക</button>
+	</form>
+</body>
+</html>

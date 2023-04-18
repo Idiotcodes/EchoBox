@@ -1,13 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
     <meta charset="UTF-8">
     <title>Echobox</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   </head>
   <body>
-    <h1>Error</h1>
-    <p>{{ message }}</p>
-    <a href="{{ url_for('feedback') }}"><button>തിരിച്ചു പോകുക</button></a>
+    <div class="center">
+    <h2>Error</h2>
+    <h4>{{ message }}</h4>
+    <audio src="{{ error }}"  autoplay></audio>
+    <button class="primary-btn"><a href="{{ url_for('response') }}">തിരിച്ചു പോകുക</a></button>
+  </div>
   </body>
 </html>
